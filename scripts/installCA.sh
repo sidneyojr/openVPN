@@ -1,27 +1,16 @@
 #!/bin/bash
 TREE='/usr/bin/tree'
 
-sudo yum install epel-release -y
+sudo yum install epel-release -y && sudo yum update -y
+sudo yum install easy-rsa openssl 
 sleep 1s
-
-sudo yum update -y
-sleep 1s
-
-sudo yum install easy-rsa openssl
-sleep 2s
-
 mkdir ~/easy-rsa
-sleep 1s
-
 ln -s /usr/share/easy-rsa/3/* ~/easy-rsa/
-sleep 1s
-
 $TREE ~/easy-rsa
 sleep 1s
 
 tput setaf 2;
 echo " Alterando Permissões e Iniciando Diretório PKI";tput sgr0 
-sleep 2s
 
 chmod 700 /home/$USER/easy-rsa
 cd ~/easy-rsa
@@ -31,15 +20,25 @@ bash easyrsa init-pki
 
 tput setaf 2;
 echo "Criando o arquivo vars da CA";tput sgr0
+echo "Digite a sigla do país BR - Brasil"
+read pais
+echo "Digite o nome estado"
+read estado
+echo "Digite o nome Cidade"
+read cidade
+echo "Digite o nome da Organização"
+read organizacao
+echo "Digite o email do SystemAdmin"
+read email
 
 sleep 1s
 
 cat <<EOF >vars
-set_var EASYRSA_REQ_COUNTRY    "BR"
-set_var EASYRSA_REQ_PROVINCE   "SaoPaulo"
-set_var EASYRSA_REQ_CITY       "Itapetininga"
-set_var EASYRSA_REQ_ORG        "Estudo"
-set_var EASYRSA_REQ_EMAIL      "sidney.o@outlook.com.br"
+set_var EASYRSA_REQ_COUNTRY    "$pais"
+set_var EASYRSA_REQ_PROVINCE   "$estado"
+set_var EASYRSA_REQ_CITY       "$cidade"
+set_var EASYRSA_REQ_ORG        "$organizacao"
+set_var EASYRSA_REQ_EMAIL      "$email"
 set_var EASYRSA_REQ_OU         "Community"
 set_var EASYRSA_ALGO           "ec"
 set_var EASYRSA_DIGEST         "sha512" "
@@ -65,7 +64,7 @@ echo "Agora vamos finalizar a construção da Autoridade Certicadora.
  		            echo "======================";tput sgr0
 		            echo ""
 	            	bash easyrsa build-ca 
-	      fi
+	fi
 
 cat ~/easy-rsa/pki/ca.crt
      
